@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>前后/左右 单选拖拽 (15句示例)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-4xl mx-auto p-4">
+    <!-- 问卷标题 -->
+    <h1 class="text-2xl font-bold mb-4">意象图式方位判断示例</h1>
+
+    <!-- 基础信息表单 -->
+    <section class="bg-white shadow p-4 rounded mb-6">
+      <div class="mb-4">
+        <label for="age" class="block text-sm font-medium text-gray-700">年龄</label>
+        <input id="age" type="number" class="mt-1 block w-40 border-gray-300 rounded" placeholder="如：25" />
+      </div>
+
+      <div class="mb-4">
+        <label for="nativeLang" class="block text-sm font-medium text-gray-700">母语</label>
+        <input id="nativeLang" type="text" class="mt-1 block w-64 border-gray-300 rounded" placeholder="如：中文" />
+      </div>
+
+      <div class="mb-4">
+        <label for="englishLevel" class="block text-sm font-medium text-gray-700">英语水平</label>
+        <select id="englishLevel" class="mt-1 block w-52 border-gray-300 rounded">
+          <option value="">-- 请选择 --</option>
+          <option value="无">无</option>
+          <option value="四级">四级</option>
+          <option value="六级">六级</option>
+          <option value="专四">专四</option>
+          <option value="专八">专八</option>
+          <option value="雅思">雅思</option>
+          <option value="托福">托福</option>
+          <option value="其他">其他</option>
+        </select>
+      </div>
+
+      <!-- 成绩输入框，对除“无”以外的选项可见 -->
+      <div class="mb-4 hidden" id="scoreWrapper">
+        <label for="englishScore" class="block text-sm font-medium text-gray-700">具体成绩或分数</label>
+        <input id="englishScore" type="text" class="mt-1 block w-48 border-gray-300 rounded" placeholder="如：540" />
+      </div>
+
+      <div>
+        <label for="studyYears" class="block text-sm font-medium text-gray-700">学习英语时长</label>
+        <select id="studyYears" class="mt-1 block w-52 border-gray-300 rounded">
+          <option value="">-- 请选择 --</option>
+          <option value="0-3">0-3 年</option>
+          <option value="3-6">3-6 年</option>
+          <option value="6-9">6-9 年</option>
+          <option value="9-12">9-12 年</option>
+          <option value="12+">12 年以上</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- 15 句意象图式判断 -->
+    <div class="space-y-6" id="allSentences">
+      <!-- 通用结构: 
+        1) 句子文字
+        2) “前后 / 左右”单选
+        3) 前后 / 左右框(带线)，根据单选动态显示
+        4) 拖拽圆形 A/B
+      -->
+
+      <!-- ============== 句子 1 ============== -->
+      <section id="sentence-1" class="bg-white rounded shadow p-4">
+        <h2 class="text-lg font-semibold mb-2">① A和B互相欣赏</h2>
+        <!-- 单选按钮 -->
+        <div class="flex items-center space-x-4 mb-4">
+          <label class="inline-flex items-center">
+            <input type="radio" name="arrange1" value="frontback" class="form-radio" />
+            <span class="ml-1">前后</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input type="radio" name="arrange1" value="leftright" class="form-radio" />
+            <span class="ml-1">左右</span>
+          </label>
+        </div>
+
+        <!-- 前后布局 (垂直线) -->
+        <div class="hidden flex flex-col items-center space-y-4 arrangement-frontback-1">
+          <div id="slot1-front"
+               class="slot-1-front w-32 h-32 border-2 border-dashed border-gray-300 rounded 
+                      flex items-center justify-center"
+               data-sentence="1" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+            <span class="text-gray-400 select-none">前</span>
+          </div>
+          <div class="h-10 w-0.5 bg-gray-300"></div>
+          <div id="slot1-back"
+               class="slot-1-back w-32 h-32 border-2 border-dashed border-gray-300 rounded 
+                      flex items-center justify-center"
+               data-sentence="1" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+            <span class="text-gray-400 select-none">后</span>
+          </div>
+        </div>
+
+        <!-- 左右布局 (水平线) -->
+        <div class="hidden flex flex-row items-center space-x-4 arrangement-leftright-1">
+          <div id="slot1-left"
+               class="slot-1-left w-32 h-32 border-2 border-dashed border-gray-300 rounded 
+                      flex items-center justify-center"
+               data-sentence="1" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+            <span class="text-gray-400 select-none">左</span>
+          </div>
+          <div class="h-0.5 w-10 bg-gray-300"></div>
+          <div id="slot1-right"
+               class="slot-1-right w-32 h-32 border-2 border-dashed border-gray-300 rounded 
+                      flex items-center justify-center"
+               data-sentence="1" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+            <span class="text-gray-400 select-none">右</span>
+          </div>
+        </div>
+
+        <!-- 拖拽圆形 A, B 大小、颜色一致 -->
+        <div class="flex space-x-4 mt-4">
+          <div id="circleA1" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center 
+                                  justify-center text-base text-blue-900 cursor-move"
+               draggable="true" ondragstart="onDragStart(event)">A</div>
+          <div id="circleB1" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center 
+                                  justify-center text-base text-blue-900 cursor-move"
+               draggable="true" ondragstart="onDragStart(event)">B</div>
+        </div>
+      </section>
+
+      <!-- ============== 句子 2 ============== -->
+      <section id="sentence-2" class="bg-white rounded shadow p-4">
+        <h2 class="text-lg font-semibold mb-2">② A和B曾经在晚宴上挥拳相向</h2>
+        <div class="flex items-center space-x-4 mb-4">
+          <label><input type="radio" name="arrange2" value="frontback"> <span class="ml-1">前后</span></label>
+          <label><input type="radio" name="arrange2" value="leftright"> <span class="ml-1">左右</span></label>
+        </div>
+        <div class="hidden flex flex-col items-center space-y-4 arrangement-frontback-2">
+          <div id="slot2-front" data-sentence="2" class="w-32 h-32 border-2 border-dashed border-gray-300 
+               rounded flex items-center justify-center" ondrop="onDrop(event)" ondragover="onDragOver(event)">
+            <span class="text-gray-400 select-none">前</span>
+          </div>
+          <div class="h-10 w-0.5 bg-gray-300"></div>
+          <div id="slot2-back" data-sentence="2" class="w-32 h-32 border-2 border-dashed border-gray-300 
+               rounded flex items-center justify-center" ondrop="onDrop(event)" ondragover="onDragOver(event)">
+            <span class="text-gray-400 select-none">后</span>
+          </div>
+        </div>
+        <div class="hidden flex flex-row items-center space-x-4 arrangement-leftright-2">
+          <div id="slot2-left" data-sentence="2" class="w-32 h-32 border-2 border-dashed border-gray-300 
+               rounded flex items-center justify-center" ondrop="onDrop(event)" ondragover="onDragOver(event)">
+            <span class="text-gray-400 select-none">左</span>
+          </div>
+          <div class="h-0.5 w-10 bg-gray-300"></div>
+          <div id="slot2-right" data-sentence="2" class="w-32 h-32 border-2 border-dashed border-gray-300 
+               rounded flex items-center justify-center" ondrop="onDrop(event)" ondragover="onDragOver(event)">
+            <span class="text-gray-400 select-none">右</span>
+          </div>
+        </div>
+        <div class="flex space-x-4 mt-4">
+          <div id="circleA2" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center 
+               text-base text-blue-900 cursor-move" draggable="true" ondragstart="onDragStart(event)">A</div>
+          <div id="circleB2" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center 
+               text-base text-blue-900 cursor-move" draggable="true" ondragstart="onDragStart(event)">B</div>
+        </div>
+      </section>
+
+      <!-- 句子3 ~ 15 与上方结构相同，这里可依次复制，修改文字、id、name 等属性作区分 -->
+      <!-- 仅举 1-2 做示意。实际请完整复制为15句。 -->
+      <!-- 如果有仅A的句子，如第6句，可不含circleB6 -->
+<!-- 句子 3: A试图阻止B -->  
+    <section id="sentence-3" class="bg-white rounded shadow p-4">  
+      <h2 class="text-lg font-semibold mb-2">③ A试图阻止B</h2>  
+      <div class="flex flex-col md:flex-row md:items-center md:justify-around mt-2">  
+        <div class="space-y-4">  
+          <div id="slot3-front" class="slot-zone3 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="3" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">前</span>  
+          </div>  
+          <div id="slot3-back" class="slot-zone3 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="3" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">后</span>  
+          </div>  
+        </div>  
+        <div class="w-10 h-0.5 bg-gray-300 rotate-90 md:rotate-0 my-4 md:my-0"></div>  
+        <div class="flex space-x-4">  
+          <div id="slot3-left" class="slot-zone3 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="3" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">左</span>  
+          </div>  
+          <div id="slot3-right" class="slot-zone3 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="3" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">右</span>  
+          </div>  
+        </div>  
+      </div>  
+      <div class="flex space-x-4 mt-4">  
+        <div id="circleA3" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="3">A</div>  
+        <div id="circleB3" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="3">B</div>  
+      </div>  
+    </section>  
+
+    <!-- 句子 4: A跑向B并喷漆 -->  
+    <section id="sentence-4" class="bg-white rounded shadow p-4">  
+      <h2 class="text-lg font-semibold mb-2">④ A跑向B并喷漆</h2>  
+      <div class="flex flex-col md:flex-row md:items-center md:justify-around mt-2">  
+        <div class="space-y-4">  
+          <div id="slot4-front" class="slot-zone4 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="4" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">前</span>  
+          </div>  
+          <div id="slot4-back" class="slot-zone4 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="4" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">后</span>  
+          </div>  
+        </div>  
+        <div class="w-10 h-0.5 bg-gray-300 rotate-90 md:rotate-0 my-4 md:my-0"></div>  
+        <div class="flex space-x-4">  
+          <div id="slot4-left" class="slot-zone4 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="4" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">左</span>  
+          </div>  
+          <div id="slot4-right" class="slot-zone4 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="4" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">右</span>  
+          </div>  
+        </div>  
+      </div>  
+      <div class="flex space-x-4 mt-4">  
+        <div id="circleA4" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="4">A</div>  
+        <div id="circleB4" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="4">B</div>  
+      </div>  
+    </section>  
+
+    <!-- 句子 5: A覆盖了部分B -->  
+    <section id="sentence-5" class="bg-white rounded shadow p-4">  
+      <h2 class="text-lg font-semibold mb-2">⑤ A覆盖了部分B</h2>  
+      <div class="flex flex-col md:flex-row md:items-center md:justify-around mt-2">  
+        <div class="space-y-4">  
+          <div id="slot5-front" class="slot-zone5 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="5" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">前</span>  
+          </div>  
+          <div id="slot5-back" class="slot-zone5 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="5" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">后</span>  
+          </div>  
+        </div>  
+        <div class="w-10 h-0.5 bg-gray-300 rotate-90 md:rotate-0 my-4 md:my-0"></div>  
+        <div class="flex space-x-4">  
+          <div id="slot5-left" class="slot-zone5 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="5" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">左</span>  
+          </div>  
+          <div id="slot5-right" class="slot-zone5 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="5" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">右</span>  
+          </div>  
+        </div>  
+      </div>  
+      <div class="flex space-x-4 mt-4">  
+        <div id="circleA5" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="5">A</div>  
+        <div id="circleB5" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="5">B</div>  
+      </div>  
+    </section>  
+
+    <!-- 句子 6: A因涉嫌破坏古迹而被捕 (仅A) -->  
+    <section id="sentence-6" class="bg-white rounded shadow p-4">  
+      <h2 class="text-lg font-semibold mb-2">⑥ A因涉嫌破坏古迹而被捕 (仅 A)</h2>  
+      <p class="text-sm text-gray-500 mb-2">本句没有 B，所以只显示一个圆，不做双对象位置校验。</p>  
+      <div class="flex flex-col md:flex-row md:items-center md:justify-around mt-2">  
+        <div class="space-y-4">  
+          <div id="slot6-front" class="slot-zone6 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="6" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">前</span>  
+          </div>  
+          <div id="slot6-back" class="slot-zone6 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="6" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">后</span>  
+          </div>  
+        </div>  
+        <div class="w-10 h-0.5 bg-gray-300 rotate-90 md:rotate-0 my-4 md:my-0"></div>  
+        <div class="flex space-x-4">  
+          <div id="slot6-left" class="slot-zone6 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="6" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">左</span>  
+          </div>  
+          <div id="slot6-right" class="slot-zone6 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="6" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">右</span>  
+          </div>  
+        </div>  
+      </div>  
+      <!-- 只有 A -->  
+      <div class="flex space-x-4 mt-4">  
+        <div id="circleA6" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="6">A</div>  
+      </div>  
+    </section>  
+
+    <!-- 句子 7: A更容易受到B影响 -->  
+    <section id="sentence-7" class="bg-white rounded shadow p-4">  
+      <h2 class="text-lg font-semibold mb-2">⑦ A更容易受到B影响</h2>  
+      <div class="flex flex-col md:flex-row md:items-center md:justify-around mt-2">  
+        <div class="space-y-4">  
+          <div id="slot7-front" class="slot-zone7 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="7" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">前</span>  
+          </div>  
+          <div id="slot7-back" class="slot-zone7 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="7" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">后</span>  
+          </div>  
+        </div>  
+        <div class="w-10 h-0.5 bg-gray-300 rotate-90 md:rotate-0 my-4 md:my-0"></div>  
+        <div class="flex space-x-4">  
+          <div id="slot7-left" class="slot-zone7 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="7" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">左</span>  
+          </div>  
+          <div id="slot7-right" class="slot-zone7 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="7" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">右</span>  
+          </div>  
+        </div>  
+      </div>  
+      <div class="flex space-x-4 mt-4">  
+        <div id="circleA7" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="7">A</div>  
+        <div id="circleB7" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="7">B</div>  
+      </div>  
+    </section>  
+
+    <!-- 句子 8: A被B拘留在大厦外 -->  
+    <section id="sentence-8" class="bg-white rounded shadow p-4">  
+      <h2 class="text-lg font-semibold mb-2">⑧ A被B拘留在大厦外</h2>  
+      <div class="flex flex-col md:flex-row md:items-center md:justify-around mt-2">  
+        <div class="space-y-4">  
+          <div id="slot8-front" class="slot-zone8 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="8" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">前</span>  
+          </div>  
+          <div id="slot8-back" class="slot-zone8 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="8" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">后</span>  
+          </div>  
+        </div>  
+        <div class="w-10 h-0.5 bg-gray-300 rotate-90 md:rotate-0 my-4 md:my-0"></div>  
+        <div class="flex space-x-4">  
+          <div id="slot8-left" class="slot-zone8 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="8" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">左</span>  
+          </div>  
+          <div id="slot8-right" class="slot-zone8 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="8" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">右</span>  
+          </div>  
+        </div>  
+      </div>  
+      <div class="flex space-x-4 mt-4">  
+        <div id="circleA8" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="8">A</div>  
+        <div id="circleB8" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="8">B</div>  
+      </div>  
+    </section>  
+
+    <!-- 句子 9: A被B的行动原由所打动 -->  
+    <section id="sentence-9" class="bg-white rounded shadow p-4">  
+      <h2 class="text-lg font-semibold mb-2">⑨ A被B的行动原由所打动</h2>  
+      <div class="flex flex-col md:flex-row md:items-center md:justify-around mt-2">  
+        <div class="space-y-4">  
+          <div id="slot9-front" class="slot-zone9 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="9" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">前</span>  
+          </div>  
+          <div id="slot9-back" class="slot-zone9 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="9" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">后</span>  
+          </div>  
+        </div>  
+        <div class="w-10 h-0.5 bg-gray-300 rotate-90 md:rotate-0 my-4 md:my-0"></div>  
+        <div class="flex space-x-4">  
+          <div id="slot9-left" class="slot-zone9 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="9" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">左</span>  
+          </div>  
+          <div id="slot9-right" class="slot-zone9 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="9" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">右</span>  
+          </div>  
+        </div>  
+      </div>  
+      <div class="flex space-x-4 mt-4">  
+        <div id="circleA9" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="9">A</div>  
+        <div id="circleB9" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="9">B</div>  
+      </div>  
+    </section>  
+
+    <!-- 句子 10: A因为排放污水被B指责 -->  
+    <section id="sentence-10" class="bg-white rounded shadow p-4">  
+      <h2 class="text-lg font-semibold mb-2">⑩ A因为排放污水被B指责</h2>  
+      <div class="flex flex-col md:flex-row md:items-center md:justify-around mt-2">  
+        <div class="space-y-4">  
+          <div id="slot10-front" class="slot-zone10 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="10" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">前</span>  
+          </div>  
+          <div id="slot10-back" class="slot-zone10 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="10" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">后</span>  
+          </div>  
+        </div>  
+        <div class="w-10 h-0.5 bg-gray-300 rotate-90 md:rotate-0 my-4 md:my-0"></div>  
+        <div class="flex space-x-4">  
+          <div id="slot10-left" class="slot-zone10 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="10" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">左</span>  
+          </div>  
+          <div id="slot10-right" class="slot-zone10 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="10" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">右</span>  
+          </div>  
+        </div>  
+      </div>  
+      <div class="flex space-x-4 mt-4">  
+        <div id="circleA10" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="10">A</div>  
+        <div id="circleB10" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="10">B</div>  
+      </div>  
+    </section>  
+
+    <!-- 句子 11: A与B在减排问题上持续对峙 -->  
+    <section id="sentence-11" class="bg-white rounded shadow p-4">  
+      <h2 class="text-lg font-semibold mb-2">⑪ A与B在减排问题上持续对峙</h2>  
+      <div class="flex flex-col md:flex-row md:items-center md:justify-around mt-2">  
+        <div class="space-y-4">  
+          <div id="slot11-front" class="slot-zone11 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="11" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">前</span>  
+          </div>  
+          <div id="slot11-back" class="slot-zone11 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="11" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">后</span>  
+          </div>  
+        </div>  
+        <div class="w-10 h-0.5 bg-gray-300 rotate-90 md:rotate-0 my-4 md:my-0"></div>  
+        <div class="flex space-x-4">  
+          <div id="slot11-left" class="slot-zone11 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="11" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">左</span>  
+          </div>  
+          <div id="slot11-right" class="slot-zone11 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="11" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">右</span>  
+          </div>  
+        </div>  
+      </div>  
+      <div class="flex space-x-4 mt-4">  
+        <div id="circleA11" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="11">A</div>  
+        <div id="circleB11" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="11">B</div>  
+      </div>  
+    </section>  
+
+    <!-- 句子 12: A和B讨论气候变化等问题 -->  
+    <section id="sentence-12" class="bg-white rounded shadow p-4">  
+      <h2 class="text-lg font-semibold mb-2">⑫ A和B讨论气候变化等问题</h2>  
+      <div class="flex flex-col md:flex-row md:items-center md:justify-around mt-2">  
+        <div class="space-y-4">  
+          <div id="slot12-front" class="slot-zone12 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="12" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">前</span>  
+          </div>  
+          <div id="slot12-back" class="slot-zone12 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="12" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">后</span>  
+          </div>  
+        </div>  
+        <div class="w-10 h-0.5 bg-gray-300 rotate-90 md:rotate-0 my-4 md:my-0"></div>  
+        <div class="flex space-x-4">  
+          <div id="slot12-left" class="slot-zone12 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="12" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">左</span>  
+          </div>  
+          <div id="slot12-right" class="slot-zone12 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="12" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">右</span>  
+          </div>  
+        </div>  
+      </div>  
+      <div class="flex space-x-4 mt-4">  
+        <div id="circleA12" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="12">A</div>  
+        <div id="circleB12" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="12">B</div>  
+      </div>  
+    </section>  
+
+    <!-- 句子 13: A和B需要携手面对各种极端天气气候事件 -->  
+    <section id="sentence-13" class="bg-white rounded shadow p-4">  
+      <h2 class="text-lg font-semibold mb-2">⑬ A和B需要携手面对各种极端天气气候事件</h2>  
+      <div class="flex flex-col md:flex-row md:items-center md:justify-around mt-2">  
+        <div class="space-y-4">  
+          <div id="slot13-front" class="slot-zone13 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="13" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">前</span>  
+          </div>  
+          <div id="slot13-back" class="slot-zone13 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="13" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">后</span>  
+          </div>  
+        </div>  
+        <div class="w-10 h-0.5 bg-gray-300 rotate-90 md:rotate-0 my-4 md:my-0"></div>  
+        <div class="flex space-x-4">  
+          <div id="slot13-left" class="slot-zone13 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="13" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">左</span>  
+          </div>  
+          <div id="slot13-right" class="slot-zone13 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="13" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">右</span>  
+          </div>  
+        </div>  
+      </div>  
+      <div class="flex space-x-4 mt-4">  
+        <div id="circleA13" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="13">A</div>  
+        <div id="circleB13" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="13">B</div>  
+      </div>  
+    </section>  
+
+    <!-- 句子 14: A和B共同努力应对气候变化 -->  
+    <section id="sentence-14" class="bg-white rounded shadow p-4">  
+      <h2 class="text-lg font-semibold mb-2">⑭ A和B共同努力应对气候变化</h2>  
+      <div class="flex flex-col md:flex-row md:items-center md:justify-around mt-2">  
+        <div class="space-y-4">  
+          <div id="slot14-front" class="slot-zone14 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="14" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">前</span>  
+          </div>  
+          <div id="slot14-back" class="slot-zone14 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="14" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">后</span>  
+          </div>  
+        </div>  
+        <div class="w-10 h-0.5 bg-gray-300 rotate-90 md:rotate-0 my-4 md:my-0"></div>  
+        <div class="flex space-x-4">  
+          <div id="slot14-left" class="slot-zone14 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="14" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">左</span>  
+          </div>  
+          <div id="slot14-right" class="slot-zone14 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="14" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">右</span>  
+          </div>  
+        </div>  
+      </div>  
+      <div class="flex space-x-4 mt-4">  
+        <div id="circleA14" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="14">A</div>  
+        <div id="circleB14" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="14">B</div>  
+      </div>  
+    </section>  
+
+    <!-- 句子 15: A和B达成合作协议以解决冲突 -->  
+    <section id="sentence-15" class="bg-white rounded shadow p-4">  
+      <h2 class="text-lg font-semibold mb-2">⑮ A和B达成合作协议以解决冲突</h2>  
+      <div class="flex flex-col md:flex-row md:items-center md:justify-around mt-2">  
+        <div class="space-y-4">  
+          <div id="slot15-front" class="slot-zone15 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="15" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">前</span>  
+          </div>  
+          <div id="slot15-back" class="slot-zone15 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="15" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">后</span>  
+          </div>  
+        </div>  
+        <div class="w-10 h-0.5 bg-gray-300 rotate-90 md:rotate-0 my-4 md:my-0"></div>  
+        <div class="flex space-x-4">  
+          <div id="slot15-left" class="slot-zone15 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="15" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">左</span>  
+          </div>  
+          <div id="slot15-right" class="slot-zone15 w-32 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center"  
+               data-sentence="15" ondrop="onDrop(event)" ondragover="onDragOver(event)">  
+            <span class="text-gray-400 select-none">右</span>  
+          </div>  
+        </div>  
+      </div>  
+      <div class="flex space-x-4 mt-4">  
+        <div id="circleA15" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="15">A</div>  
+        <div id="circleB15" class="draggable bg-blue-100 rounded-full w-14 h-14 flex items-center justify-center text-base text-blue-900 cursor-move"  
+             draggable="true" ondragstart="onDragStart(event)" data-sentence="15">B</div>  
+      </div>  
+    </section>  
+    <!-- ====== 15句结束 ====== -->  
+
+   </div><!-- end #allSentences -->
+
+    <!-- 提交按钮 -->
+    <div class="text-center mt-8">
+      <button id="submitBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">提交</button>
+    </div>
+  </div>
+
+  <script>
+    // ========== 切换英语成绩框 =============
+    const englishLevel = document.getElementById('englishLevel');
+    const scoreWrapper = document.getElementById('scoreWrapper');
+    const englishScoreInput = document.getElementById('englishScore');
+    englishLevel.addEventListener('change', () => {
+      if (englishLevel.value && englishLevel.value !== "无") {
+        scoreWrapper.classList.remove('hidden');
+      } else {
+        scoreWrapper.classList.add('hidden');
+        englishScoreInput.value = "";
+      }
+    });
+
+    // ========== 拖拽逻辑 =============
+    let originalParent = {};
+    function onDragStart(e) {
+      e.dataTransfer.setData("text/plain", e.target.id);
+      originalParent[e.target.id] = e.target.parentNode;
+    }
+    function onDragOver(e) {
+      e.preventDefault();
+    }
+    function onDrop(e) {
+      e.preventDefault();
+      const draggedId = e.dataTransfer.getData("text/plain");
+      const draggedEl = document.getElementById(draggedId);
+      if (!draggedEl) return;
+
+      const sentenceNo = e.currentTarget.getAttribute("data-sentence");
+      // 检查是否已选择前后 / 左右
+      const choice = document.querySelector(`input[name="arrange${sentenceNo}"]:checked`);
+      if (!choice) {
+        alert(`请先选择句子${sentenceNo}的“前后”或“左右”再拖拽。`);
+        return;
+      }
+      // 判断如果选了 frontback，却往 left/right 的框里放
+      if (choice.value === "frontback") {
+        if (!e.currentTarget.id.includes("front") && !e.currentTarget.id.includes("back")) {
+          alert(`本句${sentenceNo}已选择“前后”，请拖拽到前/后框。`);
+          return;
+        }
+      } else {
+        // 已选左右
+        if (!e.currentTarget.id.includes("left") && !e.currentTarget.id.includes("right")) {
+          alert(`本句${sentenceNo}已选择“左右”，请拖拽到左/右框。`);
+          return;
+        }
+      }
+
+      e.currentTarget.appendChild(draggedEl);
+      draggedEl.style.position = "static";
+    }
+
+    // ========== 监听单选，切换模块显示 =============
+    const totalSentences = 15; // 共15句
+    for (let i = 1; i <= totalSentences; i++) {
+      const radios = document.querySelectorAll(`input[name="arrange${i}"]`);
+      const fbDiv = document.querySelector(`.arrangement-frontback-${i}`);
+      const lrDiv = document.querySelector(`.arrangement-leftright-${i}`);
+
+      if (radios.length > 0 && fbDiv && lrDiv) {
+        radios.forEach(radio => {
+          radio.addEventListener('change', () => {
+            if (radio.value === "frontback") {
+              fbDiv.classList.remove('hidden');
+              lrDiv.classList.add('hidden');
+            } else {
+              lrDiv.classList.remove('hidden');
+              fbDiv.classList.add('hidden');
+            }
+          });
+        });
+      }
+    }
+
+    // ========== 提交逻辑 (演示:打印到控制台并 alert) =============
+    document.getElementById('submitBtn').addEventListener('click', () => {
+      // 1. 收集基本信息
+      const formData = {
+        age: document.getElementById('age').value.trim() || "未填",
+        motherTongue: document.getElementById('nativeLang').value.trim() || "未填",
+        englishLevel: englishLevel.value || "未选",
+        englishScore: englishScoreInput.value.trim() || "无",
+        studyYears: document.getElementById('studyYears').value || "未选"
+      };
+
+      // 2. 收集15句的选择 & 拖拽结果
+      let placements = {};
+      for (let i = 1; i <= totalSentences; i++) {
+        const choice = document.querySelector(`input[name="arrange${i}"]:checked`);
+        const A = document.getElementById(`circleA${i}`);
+        const B = document.getElementById(`circleB${i}`);
+        placements[`sentence${i}`] = {
+          arrangement: choice ? choice.value : "未选择",
+          A: A ? A.parentNode.id : "无",
+          B: B ? B.parentNode.id : "无"
+        };
+      }
+      formData["placements"] = placements;
+
+      console.log("表单提交数据 =>", formData);
+      alert("提交成功！请打开控制台查看详细结果。");
+    });
+  </script>
+</body>
+</html>
